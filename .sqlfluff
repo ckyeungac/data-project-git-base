@@ -1,0 +1,40 @@
+[sqlfluff]
+dialect = bigquery
+exclude_rules = L011,L026,L027,L028,L030,L031,L032,L034,L035,L036,L043,L060
+# ref:
+#   - https://docs.sqlfluff.com/en/stable/rules.html
+#   - https://github.com/HTTPArchive/bigquery/blob/master/sql/.sqlfluff
+# L011 - We don't always alias tables with AS ("FROM table1 AS tb1" instead of "FROM table1 tb1"). Do for columns but not for tables.
+# L026 - BigQuery uses STRUCTS which can look like incorrect table references
+# L027 - Asks for qualified columns for ambiguous ones, but we not qualify our columns, and they are not really ambiguous (or BigQuery would complain)
+# L028 - Insists on references in column names even if not ambiguous. Bit OTT.
+# L030 - Function names will be mixed case so don't enforce case
+# L031 - Avoid aliases in from and join - why?
+# L032 - Uses joins instead of USING - why?
+# L034 - Insists on wildcards (*) in certain SELECT order - why?
+# L035 - Do not use ELSE NULL as redundant. But it's clearer!?
+# L036 - Select targets should be on new lines but sub clauses don't always obey this. Maybe revisit in future?
+# L043 - Use COALESCE instead of CASE if you can. But it's clearer!?
+# L060 - Use COALESCE instead of IFNULL or NVL. We think ISNULL is clearer.
+
+# Some rules can be configured directly from the config common to other rules.
+[sqlfluff:rules]
+tab_space_size = 4
+max_line_length = 120
+indent_unit = space
+comma_style = trailing
+allow_scalar = True
+single_table_references = consistent
+unquoted_identifiers_policy = all
+
+[sqlfluff:rules:L010]  # Keywords
+capitalisation_policy = upper
+
+[sqlfluff:rules:L040]  # Null & Boolean Literals
+capitalisation_policy = upper
+
+[sqlfluff:rules:L057]  # Special characters in identifiers
+unquoted_identifiers_policy = all
+quoted_identifiers_policy = all
+allow_space_in_identifier = False
+additional_allowed_characters = ".-${}"
